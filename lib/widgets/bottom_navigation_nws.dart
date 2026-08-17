@@ -203,7 +203,7 @@ class _NwsBottomNavigationState extends State<NwsBottomNavigation>
     // Standard grounded nav bar height + Big Hero Circle (72px)
     const barHeight = 64.0;
     const totalHeight = 92.0;
-    const bubbleSize = 72.0;
+    const bubbleSize = 56.0;
 
     return Container(
       color: Colors.transparent,
@@ -270,8 +270,8 @@ class _NwsBottomNavigationState extends State<NwsBottomNavigation>
                 painter: FluidCurvedNavbarPainter(
                   notchCenterX: _currentX,
                   barHeight: barHeight + bottomPadding,
-                  notchRadius: 60.0,
-                  notchDepth: 44.0,
+                  notchRadius: 75.0,
+                  notchDepth: 51.0,
                 ),
                 size: Size(screenWidth, barHeight + bottomPadding),
               ),
