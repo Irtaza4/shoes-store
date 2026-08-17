@@ -1,30 +1,131 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:shoes_app/main.dart';
+import 'package:shoes_app/state/app_state.dart';
+import 'package:shoes_app/models/mock_data.dart';
+import 'package:shoes_app/models/product.dart';
+import 'package:shoes_app/screens/checkout_screen.dart';
+import 'package:shoes_app/screens/cart_screen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('AppState Business Logic Tests', () {
+    late AppState appState;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    setUp(() {
+      appState = AppState();
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('Initial state is correctly populated', () {
+      expect(appState.allProducts.length, MockData.products.length);
+      expect(appState.selectedCategory, 'All');
+      expect(appState.currentTabIndex, 0);
+      expect(appState.cartItems.isNotEmpty, true);
+      expect(appState.favoriteProductIds.contains('prod_1'), true);
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    test('Category filtering updates filtered products', () {
+      appState.setCategory('Running');
+      expect(appState.selectedCategory, 'Running');
+      final runningProducts = appState.filteredProducts;
+      for (final p in runningProducts) {
+        expect(p.category.toLowerCase(), 'running');
+      }
+    });
+
+    test('Search query matches shoe brand or name', () {
+      appState.setSearchQuery('Jordan');
+      final results = appState.filteredProducts;
+      expect(results.isNotEmpty, true);
+      expect(results.any((p) => p.name.contains('Jordan')), true);
+    });
+
+    test('Sorting by priceLowHigh works properly', () {
+      appState.setSortOption(SortOption.priceLowHigh);
+      final list = appState.filteredProducts;
+      for (int i = 0; i < list.length - 1; i++) {
+        expect(list[i].price <= list[i + 1].price, true);
+      }
+    });
+
+    test('Toggle favorites adds and removes correctly', () {
+      const testId = 'prod_5';
+      final wasFav = appState.isFavorite(testId);
+      appState.toggleFavorite(testId);
+      expect(appState.isFavorite(testId), !wasFav);
+      appState.toggleFavorite(testId);
+      expect(appState.isFavorite(testId), wasFav);
+    });
+
+    test('Cart additions, quantity updates, and promo codes calculate accurately', () {
+      appState.clearCart();
+      expect(appState.cartCount, 0);
+      expect(appState.subtotal, 0.0);
+
+      final product = MockData.products[0];
+      final color = product.availableColors[0];
+      const size = 42;
+
+      appState.addToCart(product, color, size, quantity: 2);
+      expect(appState.cartCount, 2);
+      expect(appState.subtotal, product.price * 2);
+
+      // Promo Code NWS20 gives 20% discount
+      final success = appState.applyPromoCode('NWS20');
+      expect(success, true);
+      expect(appState.discountAmount, closeTo(product.price * 2 * 0.20, 0.01));
+
+      // Order creation
+      final order = appState.placeOrder(
+        address: MockData.initialAddress,
+        paymentMethod: 'Apple Pay',
+        deliveryOption: 'Standard',
+      );
+
+      expect(order.status, OrderStatus.placed);
+      expect(appState.cartCount, 0); // Cart is cleared after order
+      expect(appState.orders.first.id, order.id);
+    });
+  });
+
+  group('Checkout & Cart Widget Tests', () {
+    testWidgets('CheckoutScreen renders without initState inherited widget errors',
+        (WidgetTester tester) async {
+      final appState = AppState();
+
+      await tester.pumpWidget(
+        AppStateProvider(
+          notifier: appState,
+          child: const MaterialApp(
+            home: CheckoutScreen(),
+          ),
+        ),
+      );
+
+      await tester.pump();
+
+      // Verify Checkout AppBar and Address fields
+      expect(find.text('Checkout'), findsOneWidget);
+      expect(find.text('Shipping Address'), findsOneWidget);
+      expect(find.text('Munib Tariq'), findsOneWidget);
+      expect(find.text('Continue'), findsOneWidget);
+    });
+
+    testWidgets('CartScreen renders and navigates towards checkout',
+        (WidgetTester tester) async {
+      final appState = AppState();
+
+      await tester.pumpWidget(
+        AppStateProvider(
+          notifier: appState,
+          child: const MaterialApp(
+            home: CartScreen(),
+          ),
+        ),
+      );
+
+      await tester.pump();
+
+      // Verify Cart Header & Proceed Button
+      expect(find.text('Proceed to Checkout'), findsOneWidget);
+    });
   });
 }
