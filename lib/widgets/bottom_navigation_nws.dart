@@ -19,19 +19,21 @@ class NwsBottomNavigation extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final tabWidth = screenWidth / 5;
     final activeCenterX = (currentIndex + 0.5) * tabWidth;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
-    return SizedBox(
-      height: 94,
+    return Container(
+      color: Colors.transparent,
+      height: 72 + bottomPadding,
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.bottomCenter,
         children: [
-          // Custom Curved White Background with Notch
+          // Custom Curved White Background with Smooth Notch
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
-            height: 70,
+            height: 68 + bottomPadding,
             child: TweenAnimationBuilder<double>(
               tween: Tween<double>(begin: activeCenterX, end: activeCenterX),
               duration: const Duration(milliseconds: 260),
@@ -39,7 +41,7 @@ class NwsBottomNavigation extends StatelessWidget {
               builder: (context, animX, child) {
                 return CustomPaint(
                   painter: CurvedNotchNavbarPainter(notchCenterX: animX),
-                  size: Size(screenWidth, 70),
+                  size: Size(screenWidth, 68 + bottomPadding),
                 );
               },
             ),
@@ -49,32 +51,29 @@ class NwsBottomNavigation extends StatelessWidget {
           Positioned(
             left: 0,
             right: 0,
-            bottom: 0,
-            height: 70,
-            child: SafeArea(
-              top: false,
-              child: Row(
-                children: [
-                  // Tab 0: Home Slot
-                  _buildTabSlot(0, Icons.home_outlined, isSpecial: true),
+            bottom: bottomPadding,
+            height: 64,
+            child: Row(
+              children: [
+                // Tab 0: Home Slot
+                _buildTabSlot(0, Icons.home_outlined),
 
-                  // Tab 1: Shopping Bag
-                  _buildTabSlot(
-                    1,
-                    Icons.shopping_bag_outlined,
-                    badgeCount: cartCount,
-                  ),
+                // Tab 1: Shopping Bag
+                _buildTabSlot(
+                  1,
+                  Icons.shopping_bag_outlined,
+                  badgeCount: cartCount,
+                ),
 
-                  // Tab 2: Bookmark / Saved
-                  _buildTabSlot(2, Icons.bookmark_outline_rounded),
+                // Tab 2: Bookmark / Saved
+                _buildTabSlot(2, Icons.bookmark_outline_rounded),
 
-                  // Tab 3: Explore / Search
-                  _buildTabSlot(3, Icons.search_rounded),
+                // Tab 3: Explore / Search
+                _buildTabSlot(3, Icons.search_rounded),
 
-                  // Tab 4: Profile Avatar
-                  _buildAvatarSlot(4, appState.userProfile.avatarUrl),
-                ],
-              ),
+                // Tab 4: Profile Avatar
+                _buildAvatarSlot(4, appState.userProfile.avatarUrl),
+              ],
             ),
           ),
 
@@ -83,7 +82,7 @@ class NwsBottomNavigation extends StatelessWidget {
             duration: const Duration(milliseconds: 260),
             curve: Curves.easeInOutCubic,
             left: activeCenterX - 27,
-            bottom: 30,
+            bottom: bottomPadding + 22,
             child: GestureDetector(
               onTap: () => onTap(currentIndex),
               child: Container(
@@ -94,9 +93,9 @@ class NwsBottomNavigation extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primaryAccent.withValues(alpha: 0.42),
-                      offset: const Offset(0, 6),
-                      blurRadius: 14,
+                      color: AppColors.primaryAccent.withValues(alpha: 0.45),
+                      offset: const Offset(0, 8),
+                      blurRadius: 16,
                     ),
                   ],
                 ),
@@ -118,22 +117,21 @@ class NwsBottomNavigation extends StatelessWidget {
   IconData _getActiveIconForIndex(int index) {
     switch (index) {
       case 0:
-        return Icons.home_rounded;
+        return Icons.home_outlined;
       case 1:
-        return Icons.shopping_bag_rounded;
+        return Icons.shopping_bag_outlined;
       case 2:
-        return Icons.bookmark_rounded;
+        return Icons.bookmark_outline_rounded;
       case 3:
         return Icons.search_rounded;
       case 4:
-        return Icons.person_rounded;
+        return Icons.person_outline_rounded;
       default:
-        return Icons.home_rounded;
+        return Icons.home_outlined;
     }
   }
 
-  Widget _buildTabSlot(int index, IconData icon,
-      {bool isSpecial = false, int badgeCount = 0}) {
+  Widget _buildTabSlot(int index, IconData icon, {int badgeCount = 0}) {
     final isSelected = currentIndex == index;
 
     return Expanded(
@@ -144,14 +142,14 @@ class NwsBottomNavigation extends StatelessWidget {
           height: 60,
           child: Center(
             child: isSelected
-                ? const SizedBox.shrink() // Hidden behind floating bubble
+                ? const SizedBox.shrink() // Hidden behind elevated floating bubble
                 : Stack(
                     clipBehavior: Clip.none,
                     children: [
                       Icon(
                         icon,
                         size: 24,
-                        color: const Color(0xFFB5B5BE),
+                        color: const Color(0xFF9E9EAE),
                       ),
                       if (badgeCount > 0)
                         Positioned(
@@ -221,13 +219,13 @@ class CurvedNotchNavbarPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     final shadowPaint = Paint()
-      ..color = Colors.black.withValues(alpha: 0.06)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 16);
+      ..color = Colors.black.withValues(alpha: 0.07)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 14);
 
     final path = Path();
-    const cornerRadius = 24.0;
-    const notchRadius = 34.0;
-    const notchDepth = 22.0;
+    const cornerRadius = 26.0;
+    const notchRadius = 38.0;
+    const notchDepth = 24.0;
 
     final leftNotchX = notchCenterX - notchRadius;
     final rightNotchX = notchCenterX + notchRadius;
@@ -236,41 +234,38 @@ class CurvedNotchNavbarPainter extends CustomPainter {
     path.moveTo(0, size.height);
     path.lineTo(0, cornerRadius);
 
-    // Top-left rounded corner if notch is not on the very edge
+    // Top-left corner
     if (leftNotchX > cornerRadius) {
       path.quadraticBezierTo(0, 0, cornerRadius, 0);
       path.lineTo(leftNotchX, 0);
     } else {
-      path.lineTo(0, 0);
-      if (leftNotchX > 0) {
-        path.lineTo(leftNotchX, 0);
-      }
+      path.quadraticBezierTo(0, 0, (leftNotchX > 0 ? leftNotchX : 0), 0);
     }
 
     // Smooth Curved Notch Dip around active circle
     path.cubicTo(
-      notchCenterX - 20,
-      0,
       notchCenterX - 22,
+      0,
+      notchCenterX - 24,
       notchDepth,
       notchCenterX,
       notchDepth,
     );
     path.cubicTo(
-      notchCenterX + 22,
+      notchCenterX + 24,
       notchDepth,
-      notchCenterX + 20,
+      notchCenterX + 22,
       0,
       rightNotchX,
       0,
     );
 
-    // Continue across to top-right
+    // Top-right corner
     if (rightNotchX < size.width - cornerRadius) {
       path.lineTo(size.width - cornerRadius, 0);
       path.quadraticBezierTo(size.width, 0, size.width, cornerRadius);
     } else {
-      path.lineTo(size.width, 0);
+      path.quadraticBezierTo(size.width, 0, size.width, cornerRadius);
     }
 
     // Bottom-right and close

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/product.dart';
 import '../theme/app_theme.dart';
 import '../state/app_state.dart';
+import '../widgets/image_fallback.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -198,13 +199,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         // Sneaker Image
                         Transform.rotate(
                           angle: -0.12,
-                          child: Image.network(
-                            product.images[_currentImageIndex % product.images.length],
+                          child: ShoeImage(
+                            imageUrl: product.images[_currentImageIndex % product.images.length],
                             height: 200,
                             fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.roller_skating_outlined,
-                                    size: 120, color: AppColors.neutral200),
+                            borderRadius: 0,
                           ),
                         ),
 
@@ -382,12 +381,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               width: 1.6,
                             ),
                           ),
-                          child: Image.network(
-                            product.images[index],
+                          child: ShoeImage(
+                            imageUrl: product.images[index],
                             fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) =>
-                                const Icon(Icons.roller_skating_outlined,
-                                    size: 24, color: AppColors.neutral200),
+                            borderRadius: AppRadius.sm,
                           ),
                         ),
                       );

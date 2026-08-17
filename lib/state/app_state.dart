@@ -73,7 +73,7 @@ class AppState extends ChangeNotifier {
   final List<Product> _allProducts = List.from(MockData.products);
   List<Product> get allProducts => List.unmodifiable(_allProducts);
 
-  String _selectedCategory = 'All';
+  String _selectedCategory = 'Lifestyle';
   String get selectedCategory => _selectedCategory;
 
   void setCategory(String category) {

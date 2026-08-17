@@ -5,6 +5,7 @@ import '../state/app_state.dart';
 import '../models/mock_data.dart';
 import '../widgets/category_chip.dart';
 import '../widgets/product_card.dart';
+import '../widgets/image_fallback.dart';
 import 'product_detail_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -202,12 +203,10 @@ class HomeScreen extends StatelessWidget {
                           width: 190,
                           child: Transform.rotate(
                             angle: -0.15,
-                            child: Image.network(
-                              MockData.products[2].images.first,
+                            child: ShoeImage(
+                              imageUrl: MockData.products[2].images.first,
                               fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  const Icon(Icons.roller_skating_outlined,
-                                      size: 100, color: Colors.white60),
+                              borderRadius: 0,
                             ),
                           ),
                         ),

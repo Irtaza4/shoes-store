@@ -3,6 +3,7 @@ import '../theme/app_theme.dart';
 import '../state/app_state.dart';
 import '../models/product.dart';
 import '../models/mock_data.dart';
+import '../widgets/image_fallback.dart';
 import 'order_confirmation_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -548,10 +549,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     color: AppColors.cardSurface,
                     borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
-                  child: Image.network(
-                    item.product.images.first,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.roller_skating_outlined),
+                  child: ShoeImage(
+                    imageUrl: item.product.images.first,
+                    fit: BoxFit.contain,
+                    borderRadius: AppRadius.sm,
                   ),
                 ),
                 const SizedBox(width: 12),

@@ -16,7 +16,7 @@ void main() {
 
     test('Initial state is correctly populated', () {
       expect(appState.allProducts.length, MockData.products.length);
-      expect(appState.selectedCategory, 'All');
+      expect(appState.selectedCategory, 'Lifestyle');
       expect(appState.currentTabIndex, 0);
       expect(appState.cartItems.isNotEmpty, true);
       expect(appState.favoriteProductIds.contains('prod_preday'), true);
