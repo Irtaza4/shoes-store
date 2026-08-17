@@ -33,6 +33,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             // Search Header Bar
@@ -323,9 +324,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
                               },
                             )
                           : GridView.builder(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: AppSpacing.horizontalPadding,
-                                vertical: 8,
+                              padding: const EdgeInsets.fromLTRB(
+                                AppSpacing.horizontalPadding,
+                                8,
+                                AppSpacing.horizontalPadding,
+                                110,
                               ),
                               gridDelegate:
                                   const SliverGridDelegateWithFixedCrossAxisCount(
