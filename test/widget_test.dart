@@ -160,8 +160,6 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // Active label for index 0 is "Home"
-      expect(find.text('Home'), findsOneWidget);
       expect(find.byType(NwsBottomNavigation), findsOneWidget);
     });
 
@@ -203,7 +201,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(selectedIndex, 1);
-      expect(find.text('Cart'), findsOneWidget);
     });
 
     testWidgets('Dragging horizontally smoothly slides and snaps to next tab',

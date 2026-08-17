@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 import '../state/app_state.dart';
 
@@ -159,8 +158,8 @@ class _NwsBottomNavigationState extends State<NwsBottomNavigation>
 
     // Standard grounded nav bar height + Big Hero Circle (72px)
     const barHeight = 64.0;
-    const totalHeight = 82.0;
-    const bubbleSize = 62.0;
+    const totalHeight = 92.0;
+    const bubbleSize = 58.0;
 
     return Container(
       color: Colors.transparent,
@@ -217,7 +216,7 @@ class _NwsBottomNavigationState extends State<NwsBottomNavigation>
           clipBehavior: Clip.none,
           alignment: Alignment.bottomCenter,
           children: [
-            // Custom Curved Background Painter with Fluid Moving Notch
+            // Custom Curved Background Painter with Fluid Moving Notch (Solid white, no shadow)
             Positioned(
               left: 0,
               right: 0,
@@ -228,7 +227,7 @@ class _NwsBottomNavigationState extends State<NwsBottomNavigation>
                   notchCenterX: _currentX,
                   barHeight: barHeight + bottomPadding,
                   notchRadius: 80.0,
-                  notchDepth: 55.0,
+                  notchDepth: 52.0,
                 ),
                 size: Size(screenWidth, barHeight + bottomPadding),
               ),
@@ -266,43 +265,7 @@ class _NwsBottomNavigationState extends State<NwsBottomNavigation>
               ),
             ),
 
-            // Active Tab Text Label (Displayed directly underneath the big circle)
-            Positioned(
-              left: _currentX - (tabWidth / 2),
-              bottom: bottomPadding + 3,
-              width: tabWidth,
-              child: Center(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 180),
-                  transitionBuilder: (child, animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0, 0.25),
-                          end: Offset.zero,
-                        ).animate(animation),
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: Text(
-                    _tabs[activeIndex].label,
-                    key: ValueKey<int>(activeIndex),
-                    style: GoogleFonts.inter(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.primaryAccent,
-                      letterSpacing: 0.2,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-            ),
-
-            // Big Hero Floating Orange Circle Indicator (72px diameter)
+            // Big Hero Floating Orange Circle Indicator (72px diameter, no shadow)
             Positioned(
               left: _currentX - (bubbleSize / 2),
               bottom: bottomPadding + 16,
@@ -313,21 +276,9 @@ class _NwsBottomNavigationState extends State<NwsBottomNavigation>
                 child: Container(
                   width: bubbleSize,
                   height: bubbleSize,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: AppColors.primaryAccent,
                     shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primaryAccent.withValues(alpha: _isDragging ? 0.58 : 0.45),
-                        offset: Offset(0, _isDragging ? 12 : 8),
-                        blurRadius: _isDragging ? 24 : 18,
-                      ),
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.10),
-                        offset: const Offset(0, 3),
-                        blurRadius: 8,
-                      ),
-                    ],
                   ),
                   child: Center(
                     child: AnimatedSwitcher(
@@ -438,11 +389,6 @@ class FluidCurvedNavbarPainter extends CustomPainter {
       ..color = Colors.white
       ..style = PaintingStyle.fill;
 
-    // Ambient soft top shadow for modern depth
-    final shadowPaint = Paint()
-      ..color = Colors.black.withValues(alpha: 0.06)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 18);
-
     const cornerRadius = 26.0;
     final path = Path();
 
@@ -493,8 +439,7 @@ class FluidCurvedNavbarPainter extends CustomPainter {
     path.lineTo(size.width, size.height);
     path.close();
 
-    // Draw shadow first, then white body
-    canvas.drawPath(path, shadowPaint);
+    // Solid crisp white surface with no blurry shadow
     canvas.drawPath(path, paint);
   }
 
