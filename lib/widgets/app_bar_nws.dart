@@ -114,7 +114,7 @@ class NwsAppBar extends StatelessWidget implements PreferredSizeWidget {
                     size: 23,
                     color: AppColors.primaryDark,
                   ),
-                  onPressed: onCartTap ?? () => appState.setTabIndex(3),
+                  onPressed: onCartTap ?? () => appState.setTabIndex(1),
                 ),
                 if (cartCount > 0)
                   Positioned(

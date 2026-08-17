@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../models/mock_data.dart';
 
 class CategoryChipBar extends StatelessWidget {
-  final List<String> categories;
   final String selectedCategory;
   final ValueChanged<String> onSelected;
 
   const CategoryChipBar({
     super.key,
-    required this.categories,
     required this.selectedCategory,
     required this.onSelected,
   });
@@ -16,49 +15,55 @@ class CategoryChipBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 40,
+      height: 44,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.horizontalPadding),
-        itemCount: categories.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 8),
+        itemCount: MockData.categoryItems.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
-          final cat = categories[index];
-          final isSelected = cat.toLowerCase() == selectedCategory.toLowerCase();
+          final item = MockData.categoryItems[index];
+          final String catName = item['name'] as String;
+          final IconData icon = item['icon'] as IconData;
+          final isSelected = catName.toLowerCase() == selectedCategory.toLowerCase();
 
           return GestureDetector(
-            onTap: () => onSelected(cat),
+            onTap: () => onSelected(catName),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               curve: Curves.easeInOut,
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: isSelected ? AppColors.primaryDark : AppColors.surfaceLight,
+                color: isSelected ? AppColors.primaryAccent : AppColors.cardSurface,
                 borderRadius: BorderRadius.circular(AppRadius.full),
-                border: Border.all(
-                  color: isSelected ? AppColors.primaryDark : AppColors.neutral100,
-                  width: 1.0,
-                ),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: AppColors.primaryDark.withValues(alpha: 0.15),
-                          offset: const Offset(0, 3),
-                          blurRadius: 8,
+                          color: AppColors.primaryAccent.withValues(alpha: 0.35),
+                          offset: const Offset(0, 4),
+                          blurRadius: 10,
                         ),
                       ]
                     : null,
               ),
-              child: Center(
-                child: Text(
-                  cat,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    color: isSelected ? Colors.white : AppColors.textSecondary,
-                    letterSpacing: 0.1,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    icon,
+                    size: 16,
+                    color: isSelected ? Colors.white : AppColors.textPrimary,
                   ),
-                ),
+                  const SizedBox(width: 8),
+                  Text(
+                    catName,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                      color: isSelected ? Colors.white : AppColors.textPrimary,
+                    ),
+                  ),
+                ],
               ),
             ),
           );

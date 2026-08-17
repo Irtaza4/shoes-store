@@ -197,7 +197,7 @@ class AppState extends ChangeNotifier {
   }
 
   // Favorites
-  final Set<String> _favoriteProductIds = {'prod_1', 'prod_3'};
+  final Set<String> _favoriteProductIds = {'prod_preday', 'prod_crater'};
   Set<String> get favoriteProductIds => Set.unmodifiable(_favoriteProductIds);
 
   bool isFavorite(String productId) => _favoriteProductIds.contains(productId);

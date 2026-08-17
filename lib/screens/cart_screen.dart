@@ -382,20 +382,20 @@ class _CartScreenState extends State<CartScreen> {
                         // Subtotal, Shipping, Discount Breakdown
                         _buildSummaryRow(
                           'Subtotal',
-                          '\$${appState.subtotal.toStringAsFixed(0)}',
+                          '\$${appState.subtotal.toStringAsFixed(2)}',
                         ),
                         const SizedBox(height: 6),
                         _buildSummaryRow(
                           'Shipping',
                           appState.shippingFee == 0
                               ? 'FREE'
-                              : '\$${appState.shippingFee.toStringAsFixed(0)}',
+                              : '\$${appState.shippingFee.toStringAsFixed(2)}',
                         ),
                         if (appState.discountAmount > 0) ...[
                           const SizedBox(height: 6),
                           _buildSummaryRow(
                             'Promo Discount (${appState.appliedPromoCode})',
-                            '-\$${appState.discountAmount.toStringAsFixed(0)}',
+                            '-\$${appState.discountAmount.toStringAsFixed(2)}',
                             isAccent: true,
                           ),
                         ],
@@ -417,7 +417,7 @@ class _CartScreenState extends State<CartScreen> {
                               ),
                             ),
                             Text(
-                              '\$${appState.total.toStringAsFixed(0)}',
+                              '\$${appState.total.toStringAsFixed(2)}',
                               style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w900,

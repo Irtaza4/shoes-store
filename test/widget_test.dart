@@ -19,7 +19,7 @@ void main() {
       expect(appState.selectedCategory, 'All');
       expect(appState.currentTabIndex, 0);
       expect(appState.cartItems.isNotEmpty, true);
-      expect(appState.favoriteProductIds.contains('prod_1'), true);
+      expect(appState.favoriteProductIds.contains('prod_preday'), true);
     });
 
     test('Category filtering updates filtered products', () {
@@ -32,10 +32,10 @@ void main() {
     });
 
     test('Search query matches shoe brand or name', () {
-      appState.setSearchQuery('Jordan');
+      appState.setSearchQuery('Pre-Day');
       final results = appState.filteredProducts;
       expect(results.isNotEmpty, true);
-      expect(results.any((p) => p.name.contains('Jordan')), true);
+      expect(results.any((p) => p.name.contains('Pre-Day')), true);
     });
 
     test('Sorting by priceLowHigh works properly', () {
@@ -47,7 +47,7 @@ void main() {
     });
 
     test('Toggle favorites adds and removes correctly', () {
-      const testId = 'prod_5';
+      const testId = 'prod_pegasus';
       final wasFav = appState.isFavorite(testId);
       appState.toggleFavorite(testId);
       expect(appState.isFavorite(testId), !wasFav);

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import '../state/app_state.dart';
 import '../widgets/bottom_navigation_nws.dart';
 import 'home_screen.dart';
-import 'explore_screen.dart';
-import 'favorites_screen.dart';
 import 'cart_screen.dart';
+import 'favorites_screen.dart';
+import 'explore_screen.dart';
 import 'profile_screen.dart';
 
 class MainShell extends StatelessWidget {
@@ -17,9 +17,9 @@ class MainShell extends StatelessWidget {
 
     final List<Widget> pages = const [
       HomeScreen(),
-      ExploreScreen(),
-      FavoritesScreen(),
       CartScreen(),
+      FavoritesScreen(),
+      ExploreScreen(),
       ProfileScreen(),
     ];
 

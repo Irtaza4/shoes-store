@@ -3,10 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
 import '../state/app_state.dart';
 import '../models/mock_data.dart';
-import '../widgets/app_bar_nws.dart';
 import '../widgets/category_chip.dart';
 import '../widgets/product_card.dart';
-import '../widgets/image_fallback.dart';
 import 'product_detail_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -19,261 +17,286 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: NwsAppBar(
-        showLogo: true,
-        onSearchTap: () => appState.setTabIndex(1),
-        onMenuTap: () => appState.setTabIndex(4),
-      ),
-      body: CustomScrollView(
-        slivers: [
-          // Header Headline & Editorial Banner
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.horizontalPadding,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  Text(
-                    'Find your style',
-                    style: GoogleFonts.playfairDisplay(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -0.5,
-                      color: AppColors.primaryDark,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Exclusive drops and elevated footwear aesthetics.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Large Editorial Featured Banner
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ProductDetailScreen(
-                            product: MockData.products[0],
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // Top App Bar: Hamburger Menu & Search
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.horizontalPadding,
+                  vertical: 12,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Staggered Hamburger Menu Icon
+                    GestureDetector(
+                      onTap: () => appState.setTabIndex(4),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 22,
+                            height: 2.5,
+                            decoration: BoxDecoration(
+                              color: AppColors.textPrimary,
+                              borderRadius: BorderRadius.circular(2),
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      height: 220,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryDark,
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primaryDark.withValues(alpha: 0.15),
-                            offset: const Offset(0, 8),
-                            blurRadius: 20,
+                          const SizedBox(height: 5),
+                          Container(
+                            width: 14,
+                            height: 2.5,
+                            decoration: BoxDecoration(
+                              color: AppColors.textPrimary,
+                              borderRadius: BorderRadius.circular(2),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Container(
+                            width: 18,
+                            height: 2.5,
+                            decoration: BoxDecoration(
+                              color: AppColors.textPrimary,
+                              borderRadius: BorderRadius.circular(2),
+                            ),
                           ),
                         ],
                       ),
-                      clipBehavior: Clip.antiAlias,
-                      child: Stack(
-                        children: [
-                          // Background Image
-                          Positioned.fill(
-                            child: ShoeImage(
-                              imageUrl: MockData.products[0].images.first,
-                              fit: BoxFit.cover,
-                              borderRadius: 24,
+                    ),
+
+                    // Search Action
+                    IconButton(
+                      icon: const Icon(
+                        Icons.search_rounded,
+                        size: 26,
+                        color: AppColors.textPrimary,
+                      ),
+                      onPressed: () => appState.setTabIndex(3),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Hero Banner: "New Release - Nike Air Max 90 - Shop Now"
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.horizontalPadding,
+                  vertical: 8,
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ProductDetailScreen(
+                          product: MockData.products[2],
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    height: 175,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1C1817),
+                      borderRadius: BorderRadius.circular(24),
+                      gradient: const LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          Color(0xFF161312),
+                          Color(0xFF2E1914),
+                          Color(0xFF6B291A),
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primaryDark.withValues(alpha: 0.15),
+                          offset: const Offset(0, 8),
+                          blurRadius: 18,
+                        ),
+                      ],
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Stack(
+                      children: [
+                        // Background Ghost Watermark "NIKE"
+                        Positioned(
+                          top: -10,
+                          right: -10,
+                          child: Text(
+                            'NIKE',
+                            style: GoogleFonts.inter(
+                              fontSize: 90,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 4.0,
+                              color: Colors.white.withValues(alpha: 0.05),
                             ),
                           ),
+                        ),
 
-                          // Gradient Overlay for Editorial Contrast
-                          Positioned.fill(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topRight,
-                                  end: Alignment.bottomLeft,
-                                  colors: [
-                                    Colors.black.withValues(alpha: 0.1),
-                                    Colors.black.withValues(alpha: 0.75),
-                                  ],
+                        // Left Text Content
+                        Positioned(
+                          left: 20,
+                          top: 24,
+                          bottom: 24,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'New Release',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white.withValues(alpha: 0.7),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Nike Air\nMax 90',
+                                    style: GoogleFonts.inter(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w900,
+                                      color: Colors.white,
+                                      height: 1.15,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.circular(AppRadius.full),
+                                ),
+                                child: const Text(
+                                  'Shop Now',
+                                  style: TextStyle(
+                                    color: AppColors.textPrimary,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w800,
+                                  ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
+                        ),
 
-                          // Banner Content
-                          Positioned(
-                            left: 20,
-                            bottom: 20,
-                            right: 20,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primaryAccent,
-                                    borderRadius:
-                                        BorderRadius.circular(AppRadius.sm),
-                                  ),
-                                  child: const Text(
-                                    'NEW SEASON',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1.0,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Explore the latest\nfootwear collection.',
-                                  style: GoogleFonts.playfairDisplay(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    height: 1.15,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16, vertical: 8),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(
-                                            AppRadius.full),
-                                      ),
-                                      child: const Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            'Shop Now',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
-                                              color: AppColors.primaryDark,
-                                            ),
-                                          ),
-                                          SizedBox(width: 4),
-                                          Icon(
-                                            Icons.arrow_forward_rounded,
-                                            size: 14,
-                                            color: AppColors.primaryDark,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                        // Right Sneaker Image
+                        Positioned(
+                          right: -8,
+                          top: 10,
+                          bottom: 10,
+                          width: 190,
+                          child: Transform.rotate(
+                            angle: -0.15,
+                            child: Image.network(
+                              MockData.products[2].images.first,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(Icons.roller_skating_outlined,
+                                      size: 100, color: Colors.white60),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 24),
-                ],
+                ),
               ),
             ),
-          ),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
 
-          // Horizontal Categories Selector
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CategoryChipBar(
-                  categories: MockData.categories,
-                  selectedCategory: appState.selectedCategory,
-                  onSelected: (cat) => appState.setCategory(cat),
-                ),
-                const SizedBox(height: 20),
-              ],
+            // Category Selector Horizontal Pills
+            SliverToBoxAdapter(
+              child: CategoryChipBar(
+                selectedCategory: appState.selectedCategory,
+                onSelected: (cat) => appState.setCategory(cat),
+              ),
             ),
-          ),
+            const SliverToBoxAdapter(child: SizedBox(height: 20)),
 
-          // Section Title
-          SliverToBoxAdapter(
-            child: Padding(
+            // Section Header: "New Men's" & "See all"
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.horizontalPadding,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'New Men\'s',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => appState.setTabIndex(3),
+                      child: const Text(
+                        'See all',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 12)),
+
+            // 2-Column Product Grid
+            SliverPadding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.horizontalPadding,
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    appState.selectedCategory == 'All'
-                        ? 'Trending Footwear'
-                        : appState.selectedCategory,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryDark,
-                      letterSpacing: -0.3,
-                    ),
-                  ),
-                  Text(
-                    '${products.length} pairs',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.72,
+                  crossAxisSpacing: AppSpacing.gridGap,
+                  mainAxisSpacing: AppSpacing.gridGap,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final product = products[index % products.length];
+                    return ProductCard(
+                      product: product,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ProductDetailScreen(product: product),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  childCount: products.length,
+                ),
               ),
             ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 12)),
-
-          // 2-Column Product Grid
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.horizontalPadding,
-            ),
-            sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.65,
-                crossAxisSpacing: AppSpacing.gridGap,
-                mainAxisSpacing: AppSpacing.gridGap,
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final product = products[index];
-                  return ProductCard(
-                    product: product,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ProductDetailScreen(product: product),
-                        ),
-                      );
-                    },
-                  );
-                },
-                childCount: products.length,
-              ),
-            ),
-          ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 40)),
-        ],
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          ],
+        ),
       ),
     );
   }

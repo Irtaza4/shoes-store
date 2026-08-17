@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../theme/app_theme.dart';
-import '../widgets/image_fallback.dart';
+import '../models/mock_data.dart';
 import 'main_shell.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -11,252 +10,192 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
+class _OnboardingScreenState extends State<OnboardingScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animController;
+  late Animation<double> _floatAnim;
 
-  final List<Map<String, String>> _onboardingData = [
-    {
-      'image': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1000&q=80',
-      'title': 'Find your\nnext pair.',
-      'subtitle': 'Discover footwear curated for your personal style and unmatched performance.',
-    },
-    {
-      'image': 'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=1000&q=80',
-      'title': 'Your style,\nyour way.',
-      'subtitle': 'Explore sneakers and silhouettes by brand, curated category and limited drop collections.',
-    },
-    {
-      'image': 'https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?auto=format&fit=crop&w=1000&q=80',
-      'title': 'Ready when\nyou are.',
-      'subtitle': 'Frictionless checkout, transparent order tracking, and doorstep sneaker priority delivery.',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
 
-  void _finishOnboarding() {
+    _floatAnim = Tween<double>(begin: -12, end: 12).animate(
+      CurvedAnimation(parent: _animController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
+  void _getStarted() {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => const MainShell(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
+          final tween = Tween<Offset>(
+            begin: const Offset(0.0, 1.0),
+            end: Offset.zero,
+          ).chain(CurveTween(curve: Curves.easeOutCubic));
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
         },
-        transitionDuration: const Duration(milliseconds: 400),
+        transitionDuration: const Duration(milliseconds: 550),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
+      body: GestureDetector(
+        onVerticalDragEnd: (details) {
+          if (details.primaryVelocity != null && details.primaryVelocity! < -100) {
+            // Swiped up
+            _getStarted();
+          }
+        },
+        child: Stack(
           children: [
-            // Top Bar with Skip
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.horizontalPadding,
-                vertical: 12,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'NWS',
-                        style: GoogleFonts.playfairDisplay(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 2.0,
-                          color: AppColors.primaryDark,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      Container(
-                        width: 5,
-                        height: 5,
-                        decoration: const BoxDecoration(
-                          color: AppColors.primaryAccent,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
+            // Background Dark to Burnt Orange Gradient
+            Positioned.fill(
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFF161312),
+                      Color(0xFF1C1412),
+                      Color(0xFF381B14),
+                      Color(0xFFB84424),
+                      Color(0xFFE85836),
                     ],
+                    stops: [0.0, 0.35, 0.60, 0.85, 1.0],
                   ),
-                  if (_currentPage < _onboardingData.length - 1)
-                    TextButton(
-                      onPressed: _finishOnboarding,
-                      style: TextButton.styleFrom(
-                        foregroundColor: AppColors.textSecondary,
-                      ),
-                      child: const Text(
-                        'Skip',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    )
-                  else
-                    const SizedBox(height: 48),
+                ),
+              ),
+            ),
+
+            // Background Ghost "NIKE" Typography
+            Positioned(
+              top: size.height * 0.07,
+              left: 20,
+              right: 0,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildGhostText('NIKE'),
+                  const SizedBox(height: 12),
+                  _buildGhostText('NIKE'),
+                  const SizedBox(height: 12),
+                  _buildGhostText('NIKE'),
                 ],
               ),
             ),
 
-            // Page View with shoe photography
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentPage = index;
-                  });
-                },
-                itemCount: _onboardingData.length,
-                itemBuilder: (context, index) {
-                  final data = _onboardingData[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.horizontalPadding,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Large Product Photography Container
-                        Expanded(
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: AppColors.cardSurface,
-                              borderRadius: BorderRadius.circular(28),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.05),
-                                  offset: const Offset(0, 10),
-                                  blurRadius: 20,
-                                ),
-                              ],
-                            ),
-                            clipBehavior: Clip.antiAlias,
-                            child: Stack(
-                              children: [
-                                Positioned.fill(
-                                  child: ShoeImage(
-                                    imageUrl: data['image']!,
-                                    fit: BoxFit.cover,
-                                    borderRadius: 28,
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 16,
-                                  left: 16,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primaryDark.withValues(alpha: 0.75),
-                                      borderRadius: BorderRadius.circular(AppRadius.full),
-                                    ),
-                                    child: Text(
-                                      '0${index + 1} / 0${_onboardingData.length}',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 1.0,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 32),
+            // Swirling Orbit Lines Behind Shoe
+            Positioned(
+              top: size.height * 0.16,
+              left: size.width * 0.08,
+              right: size.width * 0.08,
+              height: 290,
+              child: CustomPaint(
+                painter: OrbitTrailsPainter(),
+              ),
+            ),
 
-                        // Title & Subtitle
-                        Text(
-                          data['title']!,
-                          style: GoogleFonts.playfairDisplay(
-                            fontSize: 34,
-                            fontWeight: FontWeight.bold,
-                            height: 1.15,
-                            color: AppColors.primaryDark,
-                            letterSpacing: -0.5,
-                          ),
+            // Floating Transparent Sneaker
+            Positioned(
+              top: size.height * 0.14,
+              left: 20,
+              right: 20,
+              height: 310,
+              child: AnimatedBuilder(
+                animation: _floatAnim,
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: Offset(0, _floatAnim.value),
+                    child: Transform.rotate(
+                      angle: -0.22,
+                      child: Center(
+                        child: Image.asset(
+                          MockData.products[1].images.first,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.roller_skating_outlined,
+                                  size: 160, color: Colors.white70),
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          data['subtitle']!,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            color: AppColors.textSecondary,
-                            height: 1.45,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                      ],
+                      ),
                     ),
                   );
                 },
               ),
             ),
 
-            // Indicator Dots & CTA Button
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.horizontalPadding),
-              child: Row(
+            // Lower Content: Headline, Subtitle, and Upward CTA
+            Positioned(
+              bottom: 40,
+              left: 24,
+              right: 24,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Page Indicators
-                  Row(
-                    children: List.generate(
-                      _onboardingData.length,
-                      (index) => AnimatedContainer(
-                        duration: const Duration(milliseconds: 250),
-                        margin: const EdgeInsets.only(right: 6),
-                        width: _currentPage == index ? 24 : 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: _currentPage == index
-                              ? AppColors.primaryDark
-                              : AppColors.neutral100,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
+                  Text(
+                    'LIVE YOUR\nPERFECT',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      fontSize: 36,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: 1.2,
+                      height: 1.12,
                     ),
                   ),
-                  const Spacer(),
-
-                  // Primary Action Button
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_currentPage < _onboardingData.length - 1) {
-                        _pageController.nextPage(
-                          duration: const Duration(milliseconds: 350),
-                          curve: Curves.easeInOut,
-                        );
-                      } else {
-                        _finishOnboarding();
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 28,
-                        vertical: 16,
-                      ),
+                  const SizedBox(height: 14),
+                  Text(
+                    'Smart, gorgeous & fashionable\ncollection makes you cool',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Colors.white.withValues(alpha: 0.85),
+                      height: 1.45,
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                  ),
+                  const SizedBox(height: 34),
+
+                  // Double Chevron Up & Get Started with smooth slide up
+                  GestureDetector(
+                    onTap: _getStarted,
+                    behavior: HitTestBehavior.opaque,
+                    child: Column(
                       children: [
-                        Text(
-                          _currentPage == _onboardingData.length - 1
-                              ? 'Get Started'
-                              : 'Continue',
+                        const Icon(
+                          Icons.keyboard_double_arrow_up_rounded,
+                          color: Colors.white,
+                          size: 28,
                         ),
-                        const SizedBox(width: 8),
-                        const Icon(Icons.arrow_forward_rounded, size: 18),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Get Started',
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -268,4 +207,64 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ),
     );
   }
+
+  Widget _buildGhostText(String text) {
+    return Text(
+      text,
+      style: GoogleFonts.inter(
+        fontSize: 88,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 4.0,
+        color: Colors.transparent,
+        shadows: [
+          Shadow(
+            color: Colors.white.withValues(alpha: 0.07),
+            blurRadius: 1,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class OrbitTrailsPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint1 = Paint()
+      ..color = const Color(0xFFE85836).withValues(alpha: 0.7)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    final paint2 = Paint()
+      ..color = const Color(0xFFFF9E7D).withValues(alpha: 0.4)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2;
+
+    final path1 = Path();
+    path1.moveTo(0, size.height * 0.65);
+    path1.cubicTo(
+      size.width * 0.4,
+      size.height * 0.9,
+      size.width * 0.8,
+      size.height * 0.3,
+      size.width,
+      size.height * 0.1,
+    );
+    canvas.drawPath(path1, paint1);
+
+    final path2 = Path();
+    path2.moveTo(size.width * 0.1, size.height * 0.3);
+    path2.cubicTo(
+      size.width * 0.3,
+      size.height * 0.1,
+      size.width * 0.7,
+      size.height * 0.8,
+      size.width * 0.95,
+      size.height * 0.5,
+    );
+    canvas.drawPath(path2, paint2);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
