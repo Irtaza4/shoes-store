@@ -6,6 +6,7 @@ import 'package:shoes_app/models/product.dart';
 import 'package:shoes_app/screens/checkout_screen.dart';
 import 'package:shoes_app/screens/cart_screen.dart';
 import 'package:shoes_app/widgets/bottom_navigation_nws.dart';
+import 'package:shoes_app/widgets/product_card.dart';
 
 void main() {
   group('AppState Business Logic Tests', () {
@@ -241,6 +242,56 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(selectedIndex > 0, true);
+    });
+
+    testWidgets(
+        'Dragging a ProductCard onto the Cart bottom nav icon adds to cart',
+        (WidgetTester tester) async {
+      final appState = AppState();
+      final product = MockData.products.first;
+
+      await tester.pumpWidget(
+        AppStateProvider(
+          notifier: appState,
+          child: MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: SizedBox(
+                  width: 200,
+                  height: 280,
+                  child: ProductCard(
+                    product: product,
+                    onTap: () {},
+                  ),
+                ),
+              ),
+              bottomNavigationBar: NwsBottomNavigation(
+                currentIndex: 0,
+                onTap: (_) {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      final initialCount = appState.cartCount;
+
+      // Long press drag from ProductCard to Cart tab
+      final cardCenter = tester.getCenter(find.byType(ProductCard));
+      final screenWidth =
+          tester.view.physicalSize.width / tester.view.devicePixelRatio;
+      final cartTargetPos = tester.getTopLeft(find.byType(NwsBottomNavigation)) +
+          Offset(screenWidth * 0.3, 30);
+
+      final gesture = await tester.startGesture(cardCenter);
+      await tester.pump(const Duration(milliseconds: 300));
+      await gesture.moveTo(cartTargetPos);
+      await tester.pump(const Duration(milliseconds: 50));
+      await gesture.up();
+      await tester.pumpAndSettle();
+
+      expect(appState.cartCount, initialCount + 1);
     });
   });
 }
