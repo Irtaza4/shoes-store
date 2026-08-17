@@ -69,14 +69,14 @@ class MockData {
         'Country': 'Vietnam',
       },
       images: [
-        'assets/images/air_max_preday_volt.png',
         'assets/images/air_max_preday_terracotta.png',
         'assets/images/air_max_preday_obsidian.png',
+        'assets/images/air_max_preday_volt.png',
       ],
       availableColors: [
-        ProductColor(name: 'Volt Lime', color: Color(0xFFC4E822)),
         ProductColor(name: 'Terracotta Red', color: Color(0xFFE85836)),
         ProductColor(name: 'Obsidian Grey', color: Color(0xFF161312)),
+        ProductColor(name: 'Volt Lime', color: Color(0xFFC4E822)),
       ],
       availableSizes: [40, 41, 42, 43, 45, 46],
       outOfStockSizes: [45],

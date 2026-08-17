@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/mock_data.dart';
 import '../widgets/image_fallback.dart';
 import 'main_shell.dart';
 
@@ -97,7 +96,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
     setState(() {
       _dragOffset += details.primaryDelta ?? 0.0;
-      // Restrict drag to upward only (negative values)
       if (_dragOffset > 0) _dragOffset = 0;
     });
   }
@@ -108,15 +106,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final velocity = details.primaryVelocity ?? 0.0;
     final progress = -_dragOffset / screenHeight;
 
-    // If dragged more than 15% of screen or flicked upwards quickly
     if (progress > 0.15 || velocity < -300) {
-      // Set transition controller start from current drag progress
       _transitionController.value = progress.clamp(0.0, 1.0);
       _transitionController.forward().then((_) {
         _finishTransition();
       });
     } else {
-      // Snap back smoothly
       setState(() {
         _dragOffset = 0.0;
       });
@@ -221,9 +216,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             offset: Offset(0, _floatAnim.value),
                             child: Transform.rotate(
                               angle: -0.22,
-                              child: Center(
+                              child: const Center(
                                 child: ShoeImage(
-                                  imageUrl: MockData.products[5].images.first,
+                                  imageUrl: 'assets/images/crater_impact_white.png',
                                   fit: BoxFit.contain,
                                   borderRadius: 0,
                                 ),
