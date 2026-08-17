@@ -5,6 +5,7 @@ import 'package:shoes_app/models/mock_data.dart';
 import 'package:shoes_app/models/product.dart';
 import 'package:shoes_app/screens/checkout_screen.dart';
 import 'package:shoes_app/screens/cart_screen.dart';
+import 'package:shoes_app/widgets/bottom_navigation_nws.dart';
 
 void main() {
   group('AppState Business Logic Tests', () {
@@ -105,7 +106,7 @@ void main() {
       // Verify Checkout AppBar and Address fields
       expect(find.text('Checkout'), findsOneWidget);
       expect(find.text('Shipping Address'), findsOneWidget);
-      expect(find.text('Munib Tariq'), findsOneWidget);
+      expect(find.text('Irtaza Khalid'), findsOneWidget);
       expect(find.text('Continue'), findsOneWidget);
     });
 
@@ -126,6 +127,123 @@ void main() {
 
       // Verify Cart Header & Proceed Button
       expect(find.text('Proceed to Checkout'), findsOneWidget);
+    });
+  });
+
+  group('Draggable Curved Bottom Navigation Tests', () {
+    testWidgets('NwsBottomNavigation renders properly with initial tab and labels',
+        (WidgetTester tester) async {
+      int selectedIndex = 0;
+      final appState = AppState();
+
+      await tester.pumpWidget(
+        AppStateProvider(
+          notifier: appState,
+          child: MaterialApp(
+            home: Scaffold(
+              bottomNavigationBar: StatefulBuilder(
+                builder: (context, setState) {
+                  return NwsBottomNavigation(
+                    currentIndex: selectedIndex,
+                    onTap: (index) {
+                      setState(() {
+                        selectedIndex = index;
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Active label for index 0 is "Home"
+      expect(find.text('Home'), findsOneWidget);
+      expect(find.byType(NwsBottomNavigation), findsOneWidget);
+    });
+
+    testWidgets('Tapping on a tab slot changes selected index',
+        (WidgetTester tester) async {
+      int selectedIndex = 0;
+      final appState = AppState();
+
+      await tester.pumpWidget(
+        AppStateProvider(
+          notifier: appState,
+          child: MaterialApp(
+            home: Scaffold(
+              bottomNavigationBar: StatefulBuilder(
+                builder: (context, setState) {
+                  return NwsBottomNavigation(
+                    currentIndex: selectedIndex,
+                    onTap: (index) {
+                      setState(() {
+                        selectedIndex = index;
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Tap on the 2nd tab (Cart, index 1)
+      final screenWidth =
+          tester.view.physicalSize.width / tester.view.devicePixelRatio;
+      final tab1Offset = Offset(screenWidth * 0.3, 20);
+
+      await tester.tapAt(tester.getTopLeft(find.byType(NwsBottomNavigation)) + tab1Offset);
+      await tester.pumpAndSettle();
+
+      expect(selectedIndex, 1);
+      expect(find.text('Cart'), findsOneWidget);
+    });
+
+    testWidgets('Dragging horizontally smoothly slides and snaps to next tab',
+        (WidgetTester tester) async {
+      int selectedIndex = 0;
+      final appState = AppState();
+
+      await tester.pumpWidget(
+        AppStateProvider(
+          notifier: appState,
+          child: MaterialApp(
+            home: Scaffold(
+              bottomNavigationBar: StatefulBuilder(
+                builder: (context, setState) {
+                  return NwsBottomNavigation(
+                    currentIndex: selectedIndex,
+                    onTap: (index) {
+                      setState(() {
+                        selectedIndex = index;
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Perform a drag from tab 0 area to tab 2 area
+      final startPos = tester.getCenter(find.byType(NwsBottomNavigation)) - const Offset(120, 0);
+      final dragGesture = await tester.startGesture(startPos);
+      await dragGesture.moveBy(const Offset(160, 0));
+      await tester.pump(const Duration(milliseconds: 50));
+      await dragGesture.up();
+      await tester.pumpAndSettle();
+
+      expect(selectedIndex > 0, true);
     });
   });
 }
