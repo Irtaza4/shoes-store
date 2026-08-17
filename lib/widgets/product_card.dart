@@ -7,16 +7,19 @@ import 'image_fallback.dart';
 class ProductCard extends StatelessWidget {
   final Product product;
   final VoidCallback onTap;
+  final String? heroTag;
 
   const ProductCard({
     super.key,
     required this.product,
     required this.onTap,
+    this.heroTag,
   });
 
   @override
   Widget build(BuildContext context) {
     final appState = AppStateProvider.of(context);
+    final effectiveHeroTag = heroTag ?? 'product_image_grid_${product.id}';
 
     return GestureDetector(
       onTap: onTap,
@@ -38,11 +41,14 @@ class ProductCard extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                       child: Transform.rotate(
                         angle: -0.08,
-                        child: ShoeImage(
-                          imageUrl: product.images.first,
-                          fit: BoxFit.contain,
-                          borderRadius: AppRadius.md,
-                          backgroundColor: Colors.transparent,
+                        child: Hero(
+                          tag: effectiveHeroTag,
+                          child: ShoeImage(
+                            imageUrl: product.images.first,
+                            fit: BoxFit.contain,
+                            borderRadius: AppRadius.md,
+                            backgroundColor: Colors.transparent,
+                          ),
                         ),
                       ),
                     ),
@@ -113,13 +119,13 @@ class ProductCard extends StatelessWidget {
                         Text(
                           '\$${product.price.toStringAsFixed(2)}',
                           style: const TextStyle(
-                            fontSize: 14,
+                            fontSize: 15,
                             fontWeight: FontWeight.w900,
                             color: AppColors.textPrimary,
                           ),
                         ),
 
-                        // Black Plus Button
+                        // Quick Add Button
                         GestureDetector(
                           onTap: () {
                             appState.addToCart(
@@ -127,6 +133,7 @@ class ProductCard extends StatelessWidget {
                               product.availableColors.first,
                               product.availableSizes.first,
                             );
+
                             ScaffoldMessenger.of(context).hideCurrentSnackBar();
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -136,10 +143,29 @@ class ProductCard extends StatelessWidget {
                                   borderRadius:
                                       BorderRadius.circular(AppRadius.button),
                                 ),
-                                margin: const EdgeInsets.all(16),
-                                content: Text(
-                                  'Added ${product.name} to Bag',
-                                  style: const TextStyle(color: Colors.white),
+                                margin: const EdgeInsets.all(
+                                    AppSpacing.horizontalPadding),
+                                content: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.check_circle_rounded,
+                                      color: AppColors.primaryAccent,
+                                      size: 18,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Added ${product.name} to bag',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                action: SnackBarAction(
+                                  label: 'View Bag',
+                                  textColor: AppColors.primaryAccent,
+                                  onPressed: () => appState.setTabIndex(1),
                                 ),
                                 duration: const Duration(seconds: 2),
                               ),
@@ -153,7 +179,7 @@ class ProductCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Icon(
-                              Icons.add,
+                              Icons.add_rounded,
                               color: Colors.white,
                               size: 18,
                             ),

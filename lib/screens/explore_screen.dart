@@ -232,14 +232,18 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         itemCount: products.length,
                         itemBuilder: (context, index) {
                           final product = products[index];
+                          final exploreHeroTag = 'product_image_explore_${product.id}';
                           return ProductCard(
                             product: product,
+                            heroTag: exploreHeroTag,
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      ProductDetailScreen(product: product),
+                                  builder: (_) => ProductDetailScreen(
+                                    product: product,
+                                    heroTag: exploreHeroTag,
+                                  ),
                                 ),
                               );
                             },
@@ -333,14 +337,18 @@ class _ExploreScreenState extends State<ExploreScreen> {
                               itemCount: products.length,
                               itemBuilder: (context, index) {
                                 final product = products[index];
+                                final searchHeroTag = 'product_image_search_${product.id}';
                                 return ProductCard(
                                   product: product,
+                                  heroTag: searchHeroTag,
                                   onTap: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (_) => ProductDetailScreen(
-                                            product: product),
+                                          product: product,
+                                          heroTag: searchHeroTag,
+                                        ),
                                       ),
                                     );
                                   },

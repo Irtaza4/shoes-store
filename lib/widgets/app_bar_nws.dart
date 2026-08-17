@@ -61,7 +61,7 @@ class NwsAppBar extends StatelessWidget implements PreferredSizeWidget {
                 size: 22,
                 color: AppColors.primaryDark,
               ),
-              onPressed: onMenuTap ?? () => appState.setTabIndex(4),
+              onPressed: onMenuTap ?? () => Scaffold.of(context).openDrawer(),
             ),
       title: showLogo
           ? Column(

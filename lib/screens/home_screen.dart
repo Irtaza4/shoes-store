@@ -31,40 +31,47 @@ class HomeScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Staggered Hamburger Menu Icon
-                    GestureDetector(
-                      onTap: () => appState.setTabIndex(4),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 22,
-                            height: 2.5,
-                            decoration: BoxDecoration(
-                              color: AppColors.textPrimary,
-                              borderRadius: BorderRadius.circular(2),
-                            ),
+                    // Staggered Hamburger Menu Icon (Opens Side Drawer)
+                    Builder(
+                      builder: (scaffoldCtx) => GestureDetector(
+                        onTap: () => Scaffold.of(scaffoldCtx).openDrawer(),
+                        behavior: HitTestBehavior.opaque,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 4, horizontal: 2),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 22,
+                                height: 2.5,
+                                decoration: BoxDecoration(
+                                  color: AppColors.textPrimary,
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Container(
+                                width: 14,
+                                height: 2.5,
+                                decoration: BoxDecoration(
+                                  color: AppColors.textPrimary,
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Container(
+                                width: 18,
+                                height: 2.5,
+                                decoration: BoxDecoration(
+                                  color: AppColors.textPrimary,
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 5),
-                          Container(
-                            width: 14,
-                            height: 2.5,
-                            decoration: BoxDecoration(
-                              color: AppColors.textPrimary,
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Container(
-                            width: 18,
-                            height: 2.5,
-                            decoration: BoxDecoration(
-                              color: AppColors.textPrimary,
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
 
@@ -96,6 +103,7 @@ class HomeScreen extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (_) => ProductDetailScreen(
                           product: MockData.products[2],
+                          heroTag: 'product_image_banner_${MockData.products[2].id}',
                         ),
                       ),
                     );
@@ -203,10 +211,13 @@ class HomeScreen extends StatelessWidget {
                           width: 190,
                           child: Transform.rotate(
                             angle: -0.15,
-                            child: ShoeImage(
-                              imageUrl: MockData.products[2].images.first,
-                              fit: BoxFit.contain,
-                              borderRadius: 0,
+                            child: Hero(
+                              tag: 'product_image_banner_${MockData.products[2].id}',
+                              child: ShoeImage(
+                                imageUrl: MockData.products[2].images.first,
+                                fit: BoxFit.contain,
+                                borderRadius: 0,
+                              ),
                             ),
                           ),
                         ),
@@ -277,13 +288,18 @@ class HomeScreen extends StatelessWidget {
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     final product = products[index % products.length];
+                    final gridHeroTag = 'product_image_grid_${product.id}';
                     return ProductCard(
                       product: product,
+                      heroTag: gridHeroTag,
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => ProductDetailScreen(product: product),
+                            builder: (_) => ProductDetailScreen(
+                              product: product,
+                              heroTag: gridHeroTag,
+                            ),
                           ),
                         );
                       },

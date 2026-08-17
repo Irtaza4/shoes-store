@@ -56,13 +56,18 @@ class FavoritesScreen extends StatelessWidget {
               itemCount: favProducts.length,
               itemBuilder: (context, index) {
                 final product = favProducts[index];
+                final favHeroTag = 'product_image_fav_${product.id}';
                 return ProductCard(
                   product: product,
+                  heroTag: favHeroTag,
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => ProductDetailScreen(product: product),
+                        builder: (_) => ProductDetailScreen(
+                          product: product,
+                          heroTag: favHeroTag,
+                        ),
                       ),
                     );
                   },

@@ -7,10 +7,12 @@ import '../widgets/image_fallback.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
+  final String? heroTag;
 
   const ProductDetailScreen({
     super.key,
     required this.product,
+    this.heroTag,
   });
 
   @override
@@ -199,11 +201,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         // Sneaker Image
                         Transform.rotate(
                           angle: -0.12,
-                          child: ShoeImage(
-                            imageUrl: product.images[_currentImageIndex % product.images.length],
-                            height: 200,
-                            fit: BoxFit.contain,
-                            borderRadius: 0,
+                          child: Hero(
+                            tag: widget.heroTag ?? 'product_image_grid_${product.id}',
+                            child: ShoeImage(
+                              imageUrl: product.images[_currentImageIndex % product.images.length],
+                              height: 200,
+                              fit: BoxFit.contain,
+                              borderRadius: 0,
+                            ),
                           ),
                         ),
 
