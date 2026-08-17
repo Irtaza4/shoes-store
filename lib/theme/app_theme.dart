@@ -14,7 +14,7 @@ class AppColors {
   
   // Neutral Tones
   static const Color background = Color(0xFFFFFFFF); // Canvas
-  static const Color scaffoldBg = Color(0xFFF9F9FB);
+  static const Color scaffoldBg = Color(0xFFFFFFFF);
   static const Color surfaceLight = Color(0xFFFFFFFF);
   static const Color cardSurface = Color(0xFFF6F6F6); // Soft light grey shoe card
   static const Color cardSurfaceDark = Color(0xFF1A1615); // Dark hero card

@@ -265,7 +265,7 @@ class _NwsBottomNavigationState extends State<NwsBottomNavigation>
               ),
             ),
 
-            // Big Hero Floating Orange Circle Indicator (72px diameter, no shadow)
+            // Big Hero Floating Orange Circle Indicator (72px diameter with depth)
             Positioned(
               left: _currentX - (bubbleSize / 2),
               bottom: bottomPadding + 16,
@@ -276,9 +276,21 @@ class _NwsBottomNavigationState extends State<NwsBottomNavigation>
                 child: Container(
                   width: bubbleSize,
                   height: bubbleSize,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: AppColors.primaryAccent,
                     shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primaryAccent.withValues(alpha: _isDragging ? 0.58 : 0.45),
+                        offset: Offset(0, _isDragging ? 12 : 8),
+                        blurRadius: _isDragging ? 24 : 18,
+                      ),
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.10),
+                        offset: const Offset(0, 3),
+                        blurRadius: 8,
+                      ),
+                    ],
                   ),
                   child: Center(
                     child: AnimatedSwitcher(
@@ -389,6 +401,11 @@ class FluidCurvedNavbarPainter extends CustomPainter {
       ..color = Colors.white
       ..style = PaintingStyle.fill;
 
+    // Ambient soft top shadow for modern depth
+    final shadowPaint = Paint()
+      ..color = Colors.black.withValues(alpha: 0.05)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
+
     const cornerRadius = 26.0;
     final path = Path();
 
@@ -439,7 +456,8 @@ class FluidCurvedNavbarPainter extends CustomPainter {
     path.lineTo(size.width, size.height);
     path.close();
 
-    // Solid crisp white surface with no blurry shadow
+    // Draw shadow first, then white body
+    canvas.drawPath(path, shadowPaint);
     canvas.drawPath(path, paint);
   }
 

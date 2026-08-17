@@ -46,7 +46,12 @@ class FavoritesScreen extends StatelessWidget {
               onExplore: () => appState.setTabIndex(0),
             )
           : GridView.builder(
-              padding: const EdgeInsets.all(AppSpacing.horizontalPadding),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.horizontalPadding,
+                AppSpacing.horizontalPadding,
+                AppSpacing.horizontalPadding,
+                110,
+              ),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 0.65,

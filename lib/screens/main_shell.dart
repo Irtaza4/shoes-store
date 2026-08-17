@@ -25,6 +25,8 @@ class MainShell extends StatelessWidget {
     ];
 
     return Scaffold(
+      backgroundColor: Colors.white,
+      extendBody: true,
       drawer: const NwsSideDrawer(),
       body: IndexedStack(
         index: currentIndex,
