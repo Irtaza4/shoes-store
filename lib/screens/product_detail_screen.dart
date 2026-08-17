@@ -20,7 +20,6 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  int _currentImageIndex = 0;
   int _selectedColorIndex = 0;
   late int _selectedSize;
   String _selectedUnit = 'EU';
@@ -30,7 +29,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedSize = 42; // default active size from screenshot
+    _selectedSize = 42; // default active size from reference
   }
 
   void _onAddToBag(AppState appState) async {
@@ -40,7 +39,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     appState.addToCart(
       widget.product,
-      widget.product.availableColors[_selectedColorIndex],
+      widget.product.availableColors[_selectedColorIndex % widget.product.availableColors.length],
       _selectedSize,
     );
 
@@ -91,12 +90,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final appState = AppStateProvider.of(context);
     final product = widget.product;
     final sizeList = [40, 41, 42, 43, 45, 46];
+    final selectedColor = product.availableColors[_selectedColorIndex % product.availableColors.length];
+    final currentShoeImage = product.images[_selectedColorIndex % product.images.length];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: AppColors.background,
+        backgroundColor: Colors.white,
         elevation: 0,
+        surfaceTintColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(
             Icons.chevron_left_rounded,
@@ -138,7 +140,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       color: AppColors.primaryAccent,
                       shape: BoxShape.circle,
                     ),
-                    constraints: const BoxConstraints(minWidth: 15, minHeight: 15),
+                    constraints:
+                        const BoxConstraints(minWidth: 15, minHeight: 15),
                     child: Text(
                       '${appState.cartCount}',
                       textAlign: TextAlign.center,
@@ -170,27 +173,28 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 // Hero Sneaker Showcase with Oval Shadow
                 Center(
                   child: SizedBox(
-                    height: 240,
+                    height: 220,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        // Soft Oval Radial Glow Shadow
+                        // Soft Floor Shadow
                         Positioned(
-                          bottom: 30,
+                          bottom: 20,
                           child: Container(
-                            width: 200,
+                            width: 210,
                             height: 35,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.primaryAccent.withValues(alpha: 0.18),
-                                  blurRadius: 30,
+                                  color: AppColors.primaryAccent
+                                      .withValues(alpha: 0.18),
+                                  blurRadius: 32,
                                   spreadRadius: 8,
                                 ),
                                 BoxShadow(
                                   color: Colors.black.withValues(alpha: 0.08),
-                                  blurRadius: 20,
+                                  blurRadius: 22,
                                   spreadRadius: 2,
                                 ),
                               ],
@@ -198,69 +202,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ),
                         ),
 
-                        // Sneaker Image
+                        // Pure Transparent Hero Sneaker Image - updates dynamically on color selection
                         Transform.rotate(
                           angle: -0.12,
                           child: Hero(
-                            tag: widget.heroTag ?? 'product_image_grid_${product.id}',
-                            child: ShoeImage(
-                              imageUrl: product.images[_currentImageIndex % product.images.length],
-                              height: 200,
-                              fit: BoxFit.contain,
-                              borderRadius: 0,
-                            ),
-                          ),
-                        ),
-
-                        // Angle Switcher Pill Below Shoe "< ◉ >"
-                        Positioned(
-                          bottom: 0,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.cardSurface,
-                              borderRadius: BorderRadius.circular(AppRadius.full),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      _currentImageIndex = (_currentImageIndex - 1 + product.images.length) % product.images.length;
-                                    });
-                                  },
-                                  child: const Icon(
-                                    Icons.chevron_left_rounded,
-                                    size: 18,
-                                    color: AppColors.primaryAccent,
-                                  ),
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    color: AppColors.primaryAccent,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      _currentImageIndex = (_currentImageIndex + 1) % product.images.length;
-                                    });
-                                  },
-                                  child: const Icon(
-                                    Icons.chevron_right_rounded,
-                                    size: 18,
-                                    color: AppColors.primaryAccent,
-                                  ),
-                                ),
-                              ],
+                            tag: widget.heroTag ??
+                                'product_image_grid_${product.id}',
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 220),
+                              child: ShoeImage(
+                                key: ValueKey('hero_shoe_$currentShoeImage'),
+                                imageUrl: currentShoeImage,
+                                height: 195,
+                                fit: BoxFit.contain,
+                                borderRadius: 0,
+                              ),
                             ),
                           ),
                         ),
@@ -268,7 +224,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 24),
 
                 // Product Title
                 Text(
@@ -330,7 +286,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
-                              _isDescriptionExpanded = !_isDescriptionExpanded;
+                              _isDescriptionExpanded =
+                                  !_isDescriptionExpanded;
                             });
                           },
                           child: Text(
@@ -348,48 +305,110 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Select Color Row & Swatches
-                const Text(
-                  'Select Color :',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 10),
+                // Select Color Row & Dynamic Colorway Swatches
                 Row(
-                  children: List.generate(
-                    product.images.length,
-                    (index) {
+                  children: [
+                    const Text(
+                      'Select Color :',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      selectedColor.name,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.primaryAccent,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+
+                // Horizontally Scrollable Colorway Cards (Prevents Any RenderFlex Overflow)
+                SizedBox(
+                  height: 48,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: product.availableColors.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(width: 10),
+                    itemBuilder: (context, index) {
                       final isSelected = _selectedColorIndex == index;
+                      final colorItem = product.availableColors[index];
+                      final swatchImage =
+                          product.images[index % product.images.length];
 
                       return GestureDetector(
                         onTap: () {
                           setState(() {
                             _selectedColorIndex = index;
-                            _currentImageIndex = index;
                           });
                         },
-                        child: Container(
-                          margin: const EdgeInsets.only(right: 12),
-                          padding: const EdgeInsets.all(4),
-                          width: 58,
-                          height: 48,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 180),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
-                            color: AppColors.cardSurface,
-                            borderRadius: BorderRadius.circular(10),
+                            color: isSelected
+                                ? AppColors.primaryAccent.withValues(alpha: 0.08)
+                                : AppColors.cardSurface,
+                            borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isSelected
                                   ? AppColors.primaryAccent
                                   : Colors.transparent,
-                              width: 1.6,
+                              width: 1.8,
                             ),
                           ),
-                          child: ShoeImage(
-                            imageUrl: product.images[index],
-                            fit: BoxFit.contain,
-                            borderRadius: AppRadius.sm,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Mini Colorway Sneaker Thumbnail
+                              SizedBox(
+                                width: 38,
+                                height: 32,
+                                child: ShoeImage(
+                                  imageUrl: swatchImage,
+                                  fit: BoxFit.contain,
+                                  borderRadius: 4,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              // Color Dot
+                              Container(
+                                width: 12,
+                                height: 12,
+                                decoration: BoxDecoration(
+                                  color: colorItem.color,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.black26,
+                                    width: 0.8,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              // Color Name
+                              Text(
+                                colorItem.name,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w800
+                                      : FontWeight.w600,
+                                  color: isSelected
+                                      ? AppColors.primaryAccent
+                                      : AppColors.textPrimary,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       );
@@ -470,8 +489,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             '$size',
                             style: TextStyle(
                               fontSize: 14,
-                              fontWeight:
-                                  isSelected ? FontWeight.w800 : FontWeight.w600,
+                              fontWeight: isSelected
+                                  ? FontWeight.w800
+                                  : FontWeight.w600,
                               color: isSelected
                                   ? Colors.white
                                   : AppColors.textPrimary,
@@ -494,7 +514,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             left: AppSpacing.horizontalPadding,
             right: AppSpacing.horizontalPadding,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
                 color: AppColors.primaryDark,
                 borderRadius: BorderRadius.circular(28),
